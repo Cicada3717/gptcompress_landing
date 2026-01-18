@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPTCompress – Your ChatGPT Conversations Are Disappearing</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --text-primary: #0A1628;
+            --text-secondary: #64748B;
+            --accent: #2563EB;
+            --accent-hover: #1D4ED8;
+            --accent-secondary: #F59E0B;
+            --bg: #F8FAFC;
+            --surface: #FFFFFF;
+            --danger: #EF4444;
+            --success: #10B981;
+            --gradient-start: #1E40AF;
+            --gradient-end: #7C3AED;
+        }
+        
+        body {
+            font-family: 'SF Pro Display', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 44px;
+            background: rgba(248, 250, 252, 0.72);
+            backdrop-filter: saturate(180%) blur(20px);
+            z-index: 9999;
+            border-bottom: 0.5px solid rgba(37, 99, 235, 0.08);
+            transition: all 0.3s cubic-bezier(0.28, 0.11, 0.32, 1);
+        }
+        
+        nav.scrolled {
+            background: rgba(248, 250, 252, 0.95);
+            box-shadow: 0 1px 3px rgba(30, 64, 175, 0.06);
+        }
+        
+        .nav-content {
+            max-width: 1024px;
+            margin: 0 auto;
+            padding: 0 22px;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 19px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+        
+        .nav-link {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: opacity 0.2s ease;
+        }
+        
+        .nav-link:hover {
+            opacity: 0.7;
+        }
+        
+        .nav-cta {
+            padding: 4px 14px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-cta:hover {
+            background: var(--accent-hover);
+        }
+        
+        /* Hero Section - Fear-based messaging */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 88px 22px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            max-width: 980px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Attention-grabbing label */
+        .alert-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(239, 68, 68, 0.12));
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--danger);
+            margin-bottom: 24px;
+            animation: fadeInDown 0.8s ease;
+        }
+        
+        .alert-icon {
+            width: 16px;
+            height: 16px;
+            background: var(--danger);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.9); }
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero h1 {
+            font-size: clamp(40px, 7vw, 80px);
+            font-weight: 700;
+            letter-spacing: -0.022em;
+            line-height: 1.05;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.2s forwards;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero h1 .contrast {
+            color: var(--text-secondary);
+        }
+        
+        .hero h1 .danger-text {
+            color: var(--danger);
+        }
+        
+        .hero-subtitle {
+            font-size: 21px;
+            line-height: 1.47;
+            font-weight: 400;
+            color: var(--text-secondary);
+            max-width: 680px;
+            margin: 0 auto 32px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.4s forwards;
+        }
+        
+        .hero-subtitle strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        /* CTAs */
+        .hero-ctas {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.6s forwards;
+        }
+        
+        .btn-primary {
+            padding: 16px 40px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.28, 0.11, 0.32, 1);
+            font-family: inherit;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
+        }
+        
+        .btn-secondary {
+            padding: 16px 40px;
+            background: transparent;
+            color: var(--accent);
+            border: 2px solid rgba(0, 0, 0, 0.08);
+            border-radius: 6px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.28, 0.11, 0.32, 1);
+            font-family: inherit;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(37, 99, 235, 0.06);
+            border-color: var(--accent);
+        }
+        
+        /* Visual Demo Section - The Gap */
+        .demo-section {
+            padding: 120px 22px;
+            background: var(--surface);
+        }
+        
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+        
+        .section-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--danger);
+            margin-bottom: 16px;
+        }
+        
+        .section-title {
+            font-size: clamp(32px, 5vw, 56px);
+            font-weight: 700;
+            letter-spacing: -0.022em;
+            line-height: 1.08;
+            margin-bottom: 20px;
+        }
+        
+        .section-subtitle {
+            font-size: 21px;
+            line-height: 1.47;
+            color: var(--text-secondary);
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        
+        /* Interactive Comparison */
+        .comparison-wrapper {
+            position: relative;
+            margin-top: 80px;
+        }
+        
+        .comparison-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 48px;
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 8px;
+            padding: 4px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .toggle-btn {
+            flex: 1;
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.28, 0.11, 0.32, 1);
+            border-radius: 6px;
+            font-family: inherit;
+        }
+        
+        .toggle-btn.active {
+            background: var(--surface);
+            color: var(--text-primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .comparison-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            position: relative;
+        }
+        
+        .comparison-side {
+            padding: 48px;
+            background: var(--bg);
+            border-radius: 8px;
+            border: 2px solid rgba(0, 0, 0, 0.06);
+            transition: all 0.5s cubic-bezier(0.28, 0.11, 0.32, 1);
+            min-height: 600px;
+            position: relative;
+        }
+        
+        .side-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        
+        .side-title {
+            font-size: 19px;
+            font-weight: 600;
+        }
+        
+        .side-badge {
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        
+        .badge-problem {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--danger);
+        }
+        
+        .badge-solution {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--success);
+        }
+        
+        /* Messages */
+        .message-stream {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 480px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+        }
+        
+        .message-stream::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .message-stream::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 2px;
+        }
+        
+        .message {
+            padding: 16px 20px;
+            background: var(--surface);
+            border-radius: 6px;
+            font-size: 15px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            border-left: 2px solid rgba(0, 0, 0, 0.06);
+            opacity: 0;
+            animation: messageSlide 0.4s ease forwards;
+        }
+        
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message-count {
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        
+        /* Compressed View */
+        .compressed-blocks {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .compressed-block {
+            padding: 24px;
+            background: var(--surface);
+            border-radius: 6px;
+            border-left: 3px solid var(--accent);
+            transition: all 0.3s cubic-bezier(0.28, 0.11, 0.32, 1);
+        }
+        
+        .compressed-block:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+        
+        .block-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+        
+        .block-content {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+        
+        /* Interactive Feature Showcase */
+        .trust-section {
+            padding: 120px 22px;
+            background: var(--bg);
+        }
+        
+        .feature-showcase {
+            max-width: 1400px;
+            margin: 80px auto 0;
+            display: flex;
+            flex-direction: column;
+            gap: 120px;
+        }
+        
+        .feature-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.28, 0.11, 0.32, 1);
+        }
+        
+        .feature-row.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .feature-row.reverse {
+            direction: rtl;
+        }
+        
+        .feature-row.reverse > * {
+            direction: ltr;
+        }
+        
+        .feature-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        
+        .feature-number {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .feature-content h3 {
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+        
+        .feature-content p {
+            font-size: 19px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+        
+        .feature-visual {
+            position: relative;
+            background: var(--surface);
+            border: 2px solid rgba(0, 0, 0, 0.06);
+            border-radius: 12px;
+            padding: 48px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .feature-visual:hover {
+            border-color: rgba(37, 99, 235, 0.2);
+            box-shadow: 0 20px 60px rgba(30, 64, 175, 0.08);
+        }
+        
+        /* Animated scanning effect */
+        .scan-animation {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .scan-lines {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            opacity: 0.6;
+        }
+        
+        .scan-line {
+            height: 8px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            border-radius: 4px;
+            animation: scan 2s ease-in-out infinite;
+        }
+        
+        .scan-line:nth-child(2) { animation-delay: 0.2s; width: 80%; }
+        .scan-line:nth-child(3) { animation-delay: 0.4s; width: 60%; }
+        .scan-line:nth-child(4) { animation-delay: 0.6s; width: 90%; }
+        .scan-line:nth-child(5) { animation-delay: 0.8s; width: 70%; }
+        
+        @keyframes scan {
+            0%, 100% { opacity: 0.2; transform: translateX(-10px); }
+            50% { opacity: 1; transform: translateX(10px); }
+        }
+        
+        .scan-badge {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(124, 58, 237, 0.1));
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        /* Extraction visualization */
+        .extraction-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+        }
+        
+        .data-flow {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px;
+            background: rgba(37, 99, 235, 0.04);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
+            transform: translateX(-20px);
+            opacity: 0;
+            animation: flowIn 1s ease forwards;
+        }
+        
+        .data-flow:nth-child(1) { animation-delay: 0.2s; }
+        .data-flow:nth-child(2) { animation-delay: 0.4s; }
+        .data-flow:nth-child(3) { animation-delay: 0.6s; }
+        .data-flow:nth-child(4) { animation-delay: 0.8s; }
+        
+        @keyframes flowIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .data-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .data-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        
+        /* Structured output visualization */
+        .output-blocks {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            width: 100%;
+        }
+        
+        .output-block {
+            padding: 24px;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.03), rgba(124, 58, 237, 0.03));
+            border: 2px solid rgba(37, 99, 235, 0.1);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .output-block:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
+        }
+        
+        .output-block-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+        }
+        
+        .output-block-content {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        /* Pricing with FOMO */
+        .pricing-section {
+            padding: 120px 22px;
+            background: var(--surface);
+        }
+        
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            max-width: 1200px;
+            margin: 80px auto 0;
+        }
+        
+        .pricing-card {
+            padding: 48px;
+            background: var(--bg);
+            border: 2px solid rgba(0, 0, 0, 0.06);
+            border-radius: 8px;
+            transition: all 0.4s cubic-bezier(0.28, 0.11, 0.32, 1);
+            position: relative;
+        }
+        
+        .pricing-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08);
+            border-color: var(--accent);
+        }
+        
+        .pricing-card.featured {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.03), rgba(124, 58, 237, 0.03));
+            border-color: var(--accent);
+            border-width: 2px;
+        }
+        
+        .featured-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 6px 16px;
+            background: var(--accent);
+            color: white;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        
+        .plan-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        
+        .plan-price {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        
+        .plan-price span {
+            font-size: 19px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .plan-description {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+        
+        .plan-features {
+            list-style: none;
+            margin-bottom: 32px;
+        }
+        
+        .plan-features li {
+            padding: 12px 0;
+            font-size: 15px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            line-height: 1.5;
+        }
+        
+        .plan-features li::before {
+            content: '✓';
+            color: var(--success);
+            font-weight: 700;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .plan-btn {
+            width: 100%;
+            padding: 16px 24px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.28, 0.11, 0.32, 1);
+            font-family: inherit;
+        }
+        
+        .plan-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+        
+        .pricing-card:not(.featured) .plan-btn {
+            background: transparent;
+            border: 2px solid rgba(0, 0, 0, 0.12);
+            color: var(--text-primary);
+        }
+        
+        .pricing-card:not(.featured) .plan-btn:hover {
+            background: rgba(37, 99, 235, 0.06);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        /* Waitlist Section */
+        .waitlist-section {
+            padding: 120px 22px;
+            background: linear-gradient(180deg, var(--bg) 0%, var(--surface) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .waitlist-container {
+            max-width: 720px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .waitlist-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(124, 58, 237, 0.08));
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 24px;
+        }
+        
+        .waitlist-section h2 {
+            font-size: clamp(32px, 5vw, 56px);
+            font-weight: 700;
+            letter-spacing: -0.022em;
+            line-height: 1.08;
+            margin-bottom: 20px;
+        }
+        
+        .waitlist-section p {
+            font-size: 21px;
+            line-height: 1.47;
+            color: var(--text-secondary);
+            margin-bottom: 48px;
+        }
+        
+        .waitlist-form {
+            display: flex;
+            gap: 12px;
+            max-width: 560px;
+            margin: 0 auto 24px;
+        }
+        
+        .waitlist-input {
+            flex: 1;
+            padding: 18px 24px;
+            background: var(--surface);
+            border: 2px solid rgba(0, 0, 0, 0.08);
+            border-radius: 6px;
+            font-size: 17px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        .waitlist-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+        
+        .waitlist-btn {
+            padding: 18px 40px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.28, 0.11, 0.32, 1);
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        
+        .waitlist-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+        }
+        
+        .waitlist-note {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        /* Footer */
+        footer {
+            padding: 48px 22px;
+            background: var(--surface);
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 64px;
+        }
+        
+        .footer-col h4 {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+        
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .footer-links a {
+            font-size: 14px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: opacity 0.2s ease;
+        }
+        
+        .footer-links a:hover {
+            opacity: 0.7;
+        }
+        
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 48px auto 0;
+            padding-top: 32px;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .comparison-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .feature-row,
+            .feature-row.reverse {
+                grid-template-columns: 1fr;
+                direction: ltr;
+            }
+            
+            .output-blocks {
+                grid-template-columns: 1fr;
+            }
+            
+            .pricing-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero {
+                padding-top: 60px;
+            }
+            
+            .hero-ctas {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+            }
+            
+            .comparison-side {
+                padding: 24px;
+            }
+            
+            .waitlist-form {
+                flex-direction: column;
+            }
+            
+            .waitlist-btn {
+                width: 100%;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav id="nav">
+        <div class="nav-content">
+            <div class="logo">GPTCompress</div>
+            <div class="nav-links">
+                <a href="#problem" class="nav-link">Problem</a>
+                <a href="#solution" class="nav-link">Solution</a>
+                <a href="#pricing" class="nav-link">Pricing</a>
+                <button class="nav-cta" onclick="document.getElementById('waitlist').scrollIntoView({behavior: 'smooth'})">Join Waitlist</button>
+            </div>
+        </div>
+    </nav>
+    
+    <section class="hero">
+        <div class="hero-content">
+            <div class="alert-badge">
+                <div class="alert-icon"></div>
+                Critical Context Loss Detected
+            </div>
+            <h1>
+                <span class="contrast">ChatGPT only remembers</span><br>
+                <span class="danger-text">~50 messages.</span><br>
+                Your decisions are disappearing.
+            </h1>
+            <p class="hero-subtitle">
+                After message 50, <strong>ChatGPT starts forgetting.</strong> Critical decisions from your conversation history? Gone. Project constraints you specified 80 messages ago? Erased. You're repeating yourself. Your AI is confused. Your time is wasted.
+            </p>
+            
+            <div class="hero-ctas">
+                <button class="btn-primary" onclick="document.getElementById('waitlist').scrollIntoView({behavior: 'smooth'})">Stop Losing Context Now</button>
+                <button class="btn-secondary" onclick="document.getElementById('demo').scrollIntoView({behavior: 'smooth'})">See The Problem</button>
+            </div>
+        </div>
+    </section>
+    
+    <section class="demo-section" id="demo">
+        <div class="demo-container">
+            <div class="section-header">
+                <div class="section-label">The Painful Reality</div>
+                <h2 class="section-title">This is happening to you<br>right now.</h2>
+                <p class="section-subtitle">
+                    Your 127-message conversation about building your app? ChatGPT can only see the last ~50. When you ask it to summarize, it's working with <strong>incomplete information.</strong> Critical decisions are invisible.
+                </p>
+            </div>
+            
+            <div class="comparison-wrapper">
+                <div class="comparison-toggle">
+                    <button class="toggle-btn active" data-view="problem">What ChatGPT Sees</button>
+                    <button class="toggle-btn" data-view="solution">What GPTCompress Sees</button>
+                </div>
+                
+                <div class="comparison-content">
+                    <div class="comparison-side" id="problem-view">
+                        <div class="side-header">
+                            <div class="side-title">ChatGPT's Limited View</div>
+                            <div class="side-badge badge-problem">Truncated</div>
+                        </div>
+                        <div class="message-stream" id="messageStream">
+                            <!-- Messages populate via JS -->
+                        </div>
+                    </div>
+                    
+                    <div class="comparison-side" id="solution-view">
+                        <div class="side-header">
+                            <div class="side-title">GPTCompress Full Scan</div>
+                            <div class="side-badge badge-solution">Complete</div>
+                        </div>
+                        <div class="compressed-blocks">
+                            <div class="compressed-block">
+                                <div class="block-label">Goal</div>
+                                <div class="block-content">Build iOS-first mobile app with offline functionality, user authentication, and push notifications targeting 10K initial users</div>
+                            </div>
+                            <div class="compressed-block">
+                                <div class="block-label">Decisions Made</div>
+                                <div class="block-content">Swift + SwiftUI for native performance • Firebase for backend infrastructure • $5,000 budget allocated • 3-month development timeline • TestFlight for beta distribution</div>
+                            </div>
+                            <div class="compressed-block">
+                                <div class="block-label">Open Questions</div>
+                                <div class="block-content">Push notification implementation approach • User onboarding flow design • App Store optimization strategy • Monetization model selection</div>
+                            </div>
+                            <div class="compressed-block">
+                                <div class="block-label">Constraints</div>
+                                <div class="block-content">Must work offline • iOS 15+ compatibility required • No third-party analytics initially • GDPR compliance mandatory</div>
+                            </div>
+                            <div class="compressed-block">
+                                <div class="block-label">Key Facts</div>
+                                <div class="block-content">Core Data selected for local storage • OAuth 2.0 for authentication • App Store guidelines reviewed and approved • Target launch Q2 2026</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="trust-section" id="solution">
+        <div class="demo-container">
+            <div class="section-header">
+                <div class="section-label">The Solution</div>
+                <h2 class="section-title">We scan your entire<br>conversation history.</h2>
+                <p class="section-subtitle">
+                    GPTCompress reads <strong>every single message</strong> — not just what ChatGPT can remember. Your complete context, structured into 6 actionable categories.
+                </p>
+            </div>
+            
+            <div class="feature-showcase">
+                <!-- Feature 1: Complete History Scan -->
+                <div class="feature-row">
+                    <div class="feature-content">
+                        <div class="feature-number">01</div>
+                        <h3>Complete History Scan</h3>
+                        <p>We access your full conversation through ChatGPT's API. Every message. Every decision. Every constraint you specified 80 messages ago. Nothing truncated. Nothing lost.</p>
+                    </div>
+                    <div class="feature-visual">
+                        <div class="scan-animation">
+                            <div class="scan-badge">Scanning 127 messages...</div>
+                            <div class="scan-lines">
+                                <div class="scan-line"></div>
+                                <div class="scan-line"></div>
+                                <div class="scan-line"></div>
+                                <div class="scan-line"></div>
+                                <div class="scan-line"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feature 2: Intelligent Extraction -->
+                <div class="feature-row reverse">
+                    <div class="feature-content">
+                        <div class="feature-number">02</div>
+                        <h3>Intelligent Extraction</h3>
+                        <p>Powered by GPT-4o-mini, our engine identifies what matters. Goals, decisions, open questions, constraints, and key facts automatically extracted and categorized.</p>
+                    </div>
+                    <div class="feature-visual">
+                        <div class="extraction-visual">
+                            <div class="data-flow">
+                                <div class="data-icon">G</div>
+                                <div class="data-label">Goals Extracted</div>
+                            </div>
+                            <div class="data-flow">
+                                <div class="data-icon">D</div>
+                                <div class="data-label">Decisions Identified</div>
+                            </div>
+                            <div class="data-flow">
+                                <div class="data-icon">Q</div>
+                                <div class="data-label">Questions Tracked</div>
+                            </div>
+                            <div class="data-flow">
+                                <div class="data-icon">F</div>
+                                <div class="data-label">Facts Cataloged</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feature 3: Structured Output -->
+                <div class="feature-row">
+                    <div class="feature-content">
+                        <div class="feature-number">03</div>
+                        <h3>Structured Output</h3>
+                        <p>Clean, scannable summaries organized into 6 categories. No more scrolling through 100+ messages. Find exactly what you need in seconds.</p>
+                    </div>
+                    <div class="feature-visual">
+                        <div class="output-blocks">
+                            <div class="output-block">
+                                <div class="output-block-title">Goal</div>
+                                <div class="output-block-content">Build iOS app with offline features</div>
+                            </div>
+                            <div class="output-block">
+                                <div class="output-block-title">Decisions</div>
+                                <div class="output-block-content">Swift + SwiftUI, $5k budget</div>
+                            </div>
+                            <div class="output-block">
+                                <div class="output-block-title">Questions</div>
+                                <div class="output-block-content">Push notification strategy</div>
+                            </div>
+                            <div class="output-block">
+                                <div class="output-block-title">Constraints</div>
+                                <div class="output-block-content">Must work offline, iOS 15+</div>
+                            </div>
+                            <div class="output-block">
+                                <div class="output-block-title">Key Facts</div>
+                                <div class="output-block-content">10K users, Core Data storage</div>
+                            </div>
+                            <div class="output-block">
+                                <div class="output-block-title">Summary</div>
+                                <div class="output-block-content">Native iOS app, 3-month timeline</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="pricing-section" id="pricing">
+        <div class="demo-container">
+            <div class="section-header">
+                <div class="section-label">Pricing</div>
+                <h2 class="section-title">Stop losing context.<br>Start building faster.</h2>
+                <p class="section-subtitle">
+                    Every minute you spend scrolling through old messages is a minute you're not building. Choose the plan that matches your workflow.
+                </p>
+            </div>
+            
+            <div class="pricing-cards">
+                <div class="pricing-card">
+                    <div class="plan-name">Free</div>
+                    <div class="plan-price">$0<span>/mo</span></div>
+                    <p class="plan-description">Test the waters. See the difference.</p>
+                    <ul class="plan-features">
+                        <li>2 full compressions per month</li>
+                        <li>Complete conversation history scan</li>
+                        <li>6 structured output categories</li>
+                        <li>ChatGPT integration</li>
+                        <li>24-hour response support</li>
+                    </ul>
+                    <button class="plan-btn">Start Free</button>
+                </div>
+                
+                <div class="pricing-card featured">
+                    <div class="featured-badge">Most Popular</div>
+                    <div class="plan-name">Pro</div>
+                    <div class="plan-price">$3.99<span>/mo</span></div>
+                    <p class="plan-description">For serious builders who can't afford to lose context.</p>
+                    <ul class="plan-features">
+                        <li>Unlimited full compressions</li>
+                        <li>Complete conversation history scan</li>
+                        <li>6 structured output categories</li>
+                        <li>Priority ChatGPT integration</li>
+                        <li>1-hour priority support</li>
+                        <li>Export to Notion, Markdown, PDF</li>
+                    </ul>
+                    <button class="plan-btn">Go Pro Now</button>
+                </div>
+                
+                <div class="pricing-card">
+                    <div class="plan-name">Credits</div>
+                    <div class="plan-price">$4.99<span>+</span></div>
+                    <p class="plan-description">Pay once. Use forever. No subscription.</p>
+                    <ul class="plan-features">
+                        <li>10, 25, or 50 credit packs available</li>
+                        <li>Credits never expire</li>
+                        <li>All Pro features included</li>
+                        <li>Perfect for occasional use</li>
+                        <li>24-hour response support</li>
+                    </ul>
+                    <button class="plan-btn">Buy Credits</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="waitlist-section" id="waitlist">
+        <div class="waitlist-container">
+            <div class="waitlist-badge">Limited Early Access</div>
+            <h2>Stop losing context in<br>every conversation.</h2>
+            <p>Get early access to GPTCompress when we launch.</p>
+            
+            <form class="waitlist-form" id="waitlistForm">
+                <input type="email" class="waitlist-input" placeholder="your@email.com" required>
+                <button type="submit" class="waitlist-btn">Join Waitlist</button>
+            </form>
+            <p class="waitlist-note">No spam. Early access notification only. Unsubscribe anytime.</p>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-col">
+                <h4>GPTCompress</h4>
+                <p style="font-size: 14px; color: var(--text-secondary); margin-top: 12px; line-height: 1.6;">
+                    Stop losing context in ChatGPT. Compress your full conversation history into structured, actionable summaries.
+                </p>
+            </div>
+            <div class="footer-col">
+                <h4>Product</h4>
+                <ul class="footer-links">
+                    <li><a href="#demo">How It Works</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#waitlist">Join Waitlist</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Company</h4>
+                <ul class="footer-links">
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Privacy</a></li>
+                    <li><a href="#">Terms</a></li>
+                    <li><a href="#">Security</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 GPTCompress. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Navbar scroll effect
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+        
+        // Message stream animation
+        const messages = [
+            "How do I build a mobile app for iOS?",
+            "What framework should I use?",
+            "I'm thinking Swift or React Native...",
+            "Actually, I need offline features",
+            "Budget is around $5,000",
+            "Timeline needs to be 3 months",
+            "What about push notifications?",
+            "Should I use Firebase or Supabase?",
+            "How do I handle authentication?",
+            "Target is 10,000 initial users"
+        ];
+        
+        const messageStream = document.getElementById('messageStream');
+        let messageIndex = 0;
+        
+        function addMessage() {
+            if (messageIndex < messages.length) {
+                const msg = document.createElement('div');
+                msg.className = 'message';
+                msg.textContent = messages[messageIndex];
+                msg.style.animationDelay = '0s';
+                messageStream.appendChild(msg);
+                messageIndex++;
+                setTimeout(addMessage, 400);
+            } else {
+                // Add truncation indicator
+                const truncated = document.createElement('div');
+                truncated.className = 'message-count';
+                truncated.innerHTML = '... 117 earlier messages truncated by ChatGPT ...<br><strong style="color: var(--danger);">Critical context lost</strong>';
+                messageStream.appendChild(truncated);
+            }
+        }
+        
+        // Start message animation when section is visible
+        const demoObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && messageIndex === 0) {
+                    setTimeout(addMessage, 500);
+                }
+            });
+        }, { threshold: 0.3 });
+        
+        demoObserver.observe(document.getElementById('demo'));
+        
+        // Comparison toggle
+        const toggleBtns = document.querySelectorAll('.toggle-btn');
+        const problemView = document.getElementById('problem-view');
+        const solutionView = document.getElementById('solution-view');
+        
+        toggleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const view = btn.dataset.view;
+                
+                toggleBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                if (view === 'problem') {
+                    problemView.style.opacity = '1';
+                    problemView.style.transform = 'translateY(0)';
+                    solutionView.style.opacity = '0.3';
+                    solutionView.style.transform = 'translateY(10px)';
+                } else {
+                    solutionView.style.opacity = '1';
+                    solutionView.style.transform = 'translateY(0)';
+                    problemView.style.opacity = '0.3';
+                    problemView.style.transform = 'translateY(10px)';
+                }
+            });
+        });
+        
+        // Feature showcase scroll animations
+        const featureObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.2 });
+        
+        document.querySelectorAll('.feature-row').forEach(row => {
+            featureObserver.observe(row);
+        });
+        
+        // Waitlist form
+        document.getElementById('waitlistForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = e.target.querySelector('input').value;
+            alert(`Thanks for joining! We'll notify ${email} when early access opens.`);
+            e.target.reset();
+        });
+        
+        // Smooth scroll for all internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
