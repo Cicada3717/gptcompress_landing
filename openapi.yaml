@@ -1,0 +1,19 @@
+openapi: 3.0.1
+info:
+  title: GPTCompress API
+  description: API for compressing conversations and showing the dashboard.
+  version: 'v1'
+servers:
+  - url: https://gptcompress.vercel.app
+paths:
+  /widget.html:
+    get:
+      operationId: get_compression_status
+      summary: Get the compression status dashboard
+      responses:
+        "200":
+          description: OK
+          content:
+            text/html:
+              schema:
+                type: string
